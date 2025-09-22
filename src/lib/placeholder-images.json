@@ -1,3 +1,16 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "ai-bot",
+      "description": "An abstract representation of an AI bot or neural network.",
+      "imageUrl": "https://picsum.photos/seed/ai-bot/600/400",
+      "imageHint": "robot future"
+    },
+    {
+      "id": "user-avatar",
+      "description": "A generic user avatar.",
+      "imageUrl": "https://picsum.photos/seed/user-avatar/100/100",
+      "imageHint": "person portrait"
+    }
+  ]
 }
