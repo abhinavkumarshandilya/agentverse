@@ -13,10 +13,11 @@ import { generateAgentResponse } from "@/ai/flows/generate-agent-response";
 import { cn } from "@/lib/utils";
 import { Card } from "../ui/card";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 type Message = {
   id: number;
-  text: string;
+  text: string | React.ReactNode;
   sender: "user" | "bot";
 };
 
@@ -67,18 +68,35 @@ export function ChatInterface({ project }: { project: { id: string; name: string
         sender: "bot",
       };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating agent response:", error);
+      
+      let errorMessageText: React.ReactNode = "Sorry, I encountered an error. Please try again later.";
+      let toastDescription = "Could not get a response from the agent.";
+
+      if (error.message?.includes("API key not valid") || error.message?.includes("GEMINI_API_KEY")) {
+        errorMessageText = (
+          <span>
+            The Gemini API key is either missing or invalid. Please go to{" "}
+            <Button variant="link" asChild className="p-0 h-auto">
+              <Link href="/settings">Settings</Link>
+            </Button>{" "}
+            to add a valid key.
+          </span>
+        );
+        toastDescription = "Invalid or missing Gemini API key.";
+      }
+
       const errorMessage: Message = {
         id: Date.now() + 1,
-        text: "Sorry, I encountered an error. Please check your API keys or try again later.",
+        text: errorMessageText,
         sender: "bot",
       };
       setMessages((prev) => [...prev, errorMessage]);
       toast({
         variant: "destructive",
         title: "AI Error",
-        description: "Could not get a response from the agent.",
+        description: toastDescription,
       });
     } finally {
       setIsLoading(false);
@@ -115,7 +133,7 @@ export function ChatInterface({ project }: { project: { id: string; name: string
                     : "bg-muted"
                 )}
               >
-                <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                <div className="text-sm whitespace-pre-wrap">{message.text}</div>
               </div>
               {message.sender === "user" && (
                 <Avatar className="border">
