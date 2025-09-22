@@ -23,26 +23,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { saveSettings } from "@/app/settings/actions";
 
-const apiKeyFormSchema = z.object({
-  openAIKey: z.string().optional(),
-  openRouterKey: z.string().optional(),
+const settingsFormSchema = z.object({
+  geminiApiKey: z.string().optional(),
 });
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof apiKeyFormSchema>>({
-    resolver: zodResolver(apiKeyFormSchema),
+  const form = useForm<z.infer<typeof settingsFormSchema>>({
+    resolver: zodResolver(settingsFormSchema),
     // In a real app, you'd fetch and populate these values for the user
     defaultValues: {
-      openAIKey: "",
-      openRouterKey: "",
+      geminiApiKey: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof apiKeyFormSchema>) {
-    console.log("Saving API Keys:", values);
-    // Here you would encrypt and save the keys for the user.
+  async function onSubmit(values: z.infer<typeof settingsFormSchema>) {
+    await saveSettings(values);
     toast({
       title: "Settings Saved",
       description: "Your API keys have been updated.",
@@ -75,35 +73,20 @@ export default function SettingsPage() {
               >
                 <FormField
                   control={form.control}
-                  name="openAIKey"
+                  name="geminiApiKey"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>OpenAI API Key</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="sk-..." {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Required for agents using OpenAI models.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="openRouterKey"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>OpenRouter API Key</FormLabel>
+                      <FormLabel>Gemini API Key</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="sk-or-..."
+                          placeholder="AIza..."
                           {...field}
                         />
                       </FormControl>
                       <FormDescription>
-                        Required for agents using OpenRouter models.
+                        Required for agents using Gemini models. Get one from
+                        Google AI Studio.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
